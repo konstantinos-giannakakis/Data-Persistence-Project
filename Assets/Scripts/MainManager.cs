@@ -22,27 +22,19 @@ public class MainManager : MonoBehaviour
     private bool m_GameOver = false;
 
     public Text username;
-    private static int bestScore;
+    private int bestScore;
     public Text BestScoreText;
 
 
     // Start is called before the first frame update
 
-    private void Awake()
-    {
-
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-        LoadScore();
-    }
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        bestScore = 0;
+        BestScoreText.text = $"Best Score : {LoadScore()}";
 
-    int[] pointCountArray = new [] {1,1,2,2,5,5};
+        int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -53,7 +45,7 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
-
+        
         username.text = "Name : " + MenuManager.Instance.username;
     }
 
@@ -114,7 +106,7 @@ public class MainManager : MonoBehaviour
 
         File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
     }
-    public void LoadScore()
+    public int LoadScore()
     {
         string path = Application.persistentDataPath + "/savefile.json";
         if (File.Exists(path))
@@ -122,7 +114,8 @@ public class MainManager : MonoBehaviour
             string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            bestScore = data.bestScore;
+            return bestScore = data.bestScore;
         }
+        return 0;
     }
 }
